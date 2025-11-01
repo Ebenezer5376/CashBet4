@@ -2090,7 +2090,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode=ParseMode.HTML,
         disable_web_page_preview=True
     )
-    return
+        return
         
     if text == "🔵Pariez et gagnez sur PariBet4⚽":
         kb = InlineKeyboardMarkup([[InlineKeyboardButton("➡️ Ouvrir PariBet4", url=PARIBET4_BOT_LINK)]])

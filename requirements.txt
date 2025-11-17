@@ -1,4 +1,5 @@
 python-telegram-bot==20.3
 psycopg[binary]
 asyncpg
+psycopg-pool
 aiohttp

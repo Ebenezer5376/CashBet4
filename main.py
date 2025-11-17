@@ -6,12 +6,7 @@ from datetime import datetime, timedelta, timezone
 # Remplacé : aiosqlite -> utilisation centralisée via database.py
 # database.py doit être placé à la racine du projet (fourni précédemment).
 # Il expose init_pool, init_db, migrate_sqlite_to_postgres, et les helpers DB.
-from database import (
-    init_pool,
-    init_db,
-    init_channels_db,
-    migrate_sqlite_to_postgres
-)
+from database import init_db, init_channels_db
 
 from telegram import (
     Update,
@@ -3198,13 +3193,12 @@ async def magic_channels_sanity_check():
     print("✅ Vérification magique terminée — base PostgreSQL prête à l’emploi !")
     # ---------- début : main() mis à jour pour Railway + PostgreSQL ----------
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters
-from database import init_pool, init_db, init_channels_db   # ⭐️ IMPORTS CORRECTS POUR POSTGRESQL
+from database import init_db, init_channels_db
 
 async def main():
     # ⭐️ INITIALISATION POSTGRESQL
-    await init_pool()            # 1. Connexion pool Postgres
-    await init_db()              # 2. Initialise DB principale
-    await init_channels_db()     # 3. Initialise DB des canaux obligatoires
+    await init_db()              # Initialise DB principale
+    await init_channels_db()     # Initialise DB des canaux
 
     # 🔮 Vérification magique des canaux (version PG)
     await magic_channels_sanity_check()

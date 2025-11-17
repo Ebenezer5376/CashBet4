@@ -127,6 +127,31 @@ async def send_backup_zip(bot, manual=False):
 
     # 🧹 Supprimer le zip local
     os.remove(zip_name)
+    # ============================
+# ⏳ BACKUP AUTOMATIQUE 00h et 12h
+# ============================
+
+async def periodic_backup(app):
+    """Effectue un backup automatique tous les jours à 00h00 et 12h00."""
+    import asyncio
+    from datetime import datetime
+
+    while True:
+        now = datetime.now()
+
+        # Si l'heure correspond à 00h ou 12h
+        if now.hour in (0, 12) and now.minute == 0:
+            try:
+                print("📦 Exécution du backup automatique...")
+                await send_backup_zip(app.bot, manual=False)
+                print("✅ Backup automatique effectué.")
+            except Exception as e:
+                print("❌ Erreur backup automatique :", e)
+
+            # Pour éviter double backup sur la même minute
+            await asyncio.sleep(60)
+
+        await asyncio.sleep(20)  # Vérifie chaque 20 secondes
 # ------------------------------
 # Initialisation SQLite async
 # ------------------------------

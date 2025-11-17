@@ -1,5 +1,4 @@
-import asyncio
-import nest_asyncio
+
 import random
 import time
 from datetime import datetime, timedelta, timezone

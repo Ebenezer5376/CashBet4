@@ -2122,7 +2122,7 @@ async def admi_generate_code_count(update: Update, context: ContextTypes.DEFAULT
             f"<b><i>⚠️ Erreur d’envoi : {e}</i></b>",
             parse_mode=ParseMode.HTML
         )
-        # ------------------------------
+      # ------------------------------
 # Menu (gestion principale)
 # ------------------------------
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -2135,73 +2135,73 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # 🔵 Charger l'utilisateur depuis PostgreSQL
-    user = await get_user(user_id)   # version PostgreSQL (à fournir juste après)
+    user = await get_user(user_id)  # version PostgreSQL
     if not user:
         await update.message.reply_text("⚠️ Tape /start pour commencer.")
         return
 
-    # user[5] correspond à check_passed dans l'ordre de ta table
+    # check_passed
     if not user["check_passed"]:
         await update.message.reply_text("❌ Clique sur ✅Check avant d’accéder au menu.")
         return
-        # ------------------------------
-# ADMIN: saisie nouveau lien après "Remplacer" / "Ajouter"
-# ------------------------------
-if update.effective_user.id == SUPPORT_CHAT_ID and context.user_data.get("await_ch_replace_id"):
-    cid = context.user_data.pop("await_ch_replace_id")
-    new_value = (update.message.text or "").strip()
-    try:
-        # 🔵 Mise à jour PostgreSQL
-        await set_channel_link_by_id(cid, new_value)
 
-        rows = await get_required_channels_all()
-        lab = next((r["label"] for r in rows if r["id"] == cid), None)
+    # ------------------------------
+    # ADMIN: saisie nouveau lien après "Remplacer"
+    # ------------------------------
+    if update.effective_user.id == SUPPORT_CHAT_ID and context.user_data.get("await_ch_replace_id"):
+        cid = context.user_data.pop("await_ch_replace_id")
+        new_value = (update.message.text or "").strip()
+        try:
+            # 🔵 Mise à jour PostgreSQL
+            await set_channel_link_by_id(cid, new_value)
 
-        # 🔵 Notifier tous les utilisateurs du nouveau canal
-        await notify_all_users_new_channel(context.bot, lab, new_value)
-
-        await update.message.reply_text(
-            f"✅ Lien du canal {lab} mis à jour et notification envoyée."
-        )
-    except Exception as e:
-        await update.message.reply_text(f"❌ Erreur : {e}")
-    return
-
-
-# ------------------------------
-# ADMIN: saisie lors de "Ajouter"
-# ------------------------------
-if update.effective_user.id == SUPPORT_CHAT_ID and context.user_data.get("await_ch_add"):
-    context.user_data.pop("await_ch_add")
-
-    txt = (update.message.text or "").strip()
-    try:
-        parts = [p.strip() for p in txt.split("|")]
-        if len(parts) >= 2:
-            label = parts[0]
-            candidate = parts[1]
-
-            usr, url = _normalize_username_and_url(candidate)
-
-            # 🔵 INSERT/UPDATE PostgreSQL
-            await insert_or_update_channel(label, usr, url)
+            rows = await get_required_channels_all()
+            lab = next((r["label"] for r in rows if r["id"] == cid), None)
 
             # 🔵 Notifier tous les utilisateurs
-            await notify_all_users_new_channel(context.bot, label, url)
+            await notify_all_users_new_channel(context.bot, lab, new_value)
 
             await update.message.reply_text(
-                f"✅ Canal ajouté/mis à jour : {label} ({url}). Notification envoyée."
+                f"✅ Lien du canal {lab} mis à jour et notification envoyée."
             )
-            return
-
-    except Exception as e:
-        await update.message.reply_text(f"❌ Erreur : {e}")
+        except Exception as e:
+            await update.message.reply_text(f"❌ Erreur : {e}")
         return
 
-    await update.message.reply_text(
-        "❌ Format invalide. Exemple: `@CashBet4_Pub8 | @MonCanal`"
-    )
-    return
+    # ------------------------------
+    # ADMIN: saisie lors de "Ajouter"
+    # ------------------------------
+    if update.effective_user.id == SUPPORT_CHAT_ID and context.user_data.get("await_ch_add"):
+        context.user_data.pop("await_ch_add")
+
+        txt = (update.message.text or "").strip()
+        try:
+            parts = [p.strip() for p in txt.split("|")]
+            if len(parts) >= 2:
+                label = parts[0]
+                candidate = parts[1]
+
+                usr, url = _normalize_username_and_url(candidate)
+
+                # 🔵 INSERT/UPDATE PostgreSQL
+                await insert_or_update_channel(label, usr, url)
+
+                # 🔵 Notifier tous les utilisateurs
+                await notify_all_users_new_channel(context.bot, label, url)
+
+                await update.message.reply_text(
+                    f"✅ Canal ajouté/mis à jour : {label} ({url}). Notification envoyée."
+                )
+                return
+
+        except Exception as e:
+            await update.message.reply_text(f"❌ Erreur : {e}")
+            return
+
+        await update.message.reply_text(
+            "❌ Format invalide. Exemple: `@CashBet4_Pub8 | @MonCanal`"
+        )
+        return
     # ------------------------------
     # Menu utilisateur principal
     # ------------------------------

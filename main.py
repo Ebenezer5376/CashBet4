@@ -21,7 +21,6 @@ from telegram.ext import (
 )
 from telegram.constants import ParseMode
 
-nest_asyncio.apply()
 # ====== CONFIG ======
 import os
 TOKEN = os.getenv("BOT_TOKEN")
